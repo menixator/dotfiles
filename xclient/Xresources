@@ -3,7 +3,7 @@
 #define S_base02        #073642
 #define S_base01        #586e75
 #define S_base00        #657b83
-#define S_base0         #839496
+#define S_base0         #a5aeaf
 #define S_base1         #93a1a1
 #define S_base2         #eee8d5
 #define S_base3         #fdf6e3
@@ -74,16 +74,15 @@ URxvt.secondaryWheel: 1
 URxvt.scrollBar: false
 
 URxvt*cursorUnderline: false
+
 URxvt.font: xft:Ubuntu Mono:size=13
-!URxvt.font: xft:Inconsolata for Powerline:size=13
-
-!URxvt.font: xft:Iosevka Term Medium:size=12
-!URxvt.boldFont: xft:Iosevka Term Medium:size=12
-URxvt.letterSpace: -1.9
+URxvt.boldFont:xft:Ubuntu Mono:size=13
+!URxvt.letterSpace: -2.5
 !URxvt.letterSpace: 0
+URxvt.letterSpace: -1.9238273
 
 
-URxvt.geometry: 90x35
+URxvt.geometry: 90x34
 
 URxvt.iso14755 : false
 
@@ -95,6 +94,7 @@ URxvt.perl-lib: /usr/lib/urxvt/perl/
 
 
 URxvt.perl-ext: default,matcher
+
 URxvt.perl-ext-common: clipboard
 
 URxvt.keysym.C-C: perl:clipboard:copy
