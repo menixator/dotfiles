@@ -1,3 +1,10 @@
+
+setopt NO_BEEP 
+
+if [[ -z $TMUX ]]  &&  [ "$TERM" != "tmux-256color" ] && [ -z "$SUDO_USER" ]; then
+  tmux attach || tmux && exit;
+fi
+
 # If you come from bash you might have to change your $PATH.
 
 export PATH=$HOME/.bin:/usr/local/bin:$PATH
@@ -75,27 +82,26 @@ fi
 # export ARCHFLAGS="-arch x86_64"
 
 alias wanip='dig +short myip.opendns.com @resolver1.opendns.com'
-alias lanip='_lanip | column -t'
-function _lanip(){
 
-for dev in $(ls /sys/class/net); do
-  echo -n $dev " "
-  net=$(ip -f inet addr show $dev | grep --color=never -Po 'inet \K[\d.]+?\/\d+')
-  if [[ -n $net ]]; then
-    echo -n $net
-  else
-    echo -n 'nil'
-  fi
-  echo -n "\t"
-  mac=$(ip -f link addr show $dev | grep --color=never -Po 'link/[\w\d]+\s*\K[\da-f]{2}(:[\da-f]{2}){5}');
+function lanip(){
+  (for dev in $(ls /sys/class/net); do
+    echo -n $dev " "
+    net=$(ip -f inet addr show $dev | grep --color=never -Po 'inet \K[\d.]+?\/\d+')
+    if [[ -n $net ]]; then
+      echo -n $net
+    else
+      echo -n 'nil'
+    fi
+    echo -n "\t"
+    mac=$(ip -f link addr show $dev | grep --color=never -Po 'link/[\w\d]+\s*\K[\da-f]{2}(:[\da-f]{2}){5}');
 
-  if [[ -n $mac ]] && [ "$mac" != "00:00:00:00:00:00" ]; then
-    echo -n  $mac
-  else
-    echo -n 'nil'
-  fi
-  echo
-done
+    if [[ -n $mac ]] && [ "$mac" != "00:00:00:00:00:00" ]; then
+      echo -n  $mac
+    else
+      echo -n 'nil'
+    fi
+    echo
+  done) | column -t
 }
 
 
@@ -145,12 +151,47 @@ setopt HIST_VERIFY               # Don't execute immediately upon history expans
 
 export DEBUG=""
 
-if [[ -z $TMUX ]]  &&  [ "$TERM" != "tmux-256color" ]; then
-  tmux attach || tmux && exit;
-fi
 
+
+zmodload zsh/mathfunc
 
 
 # Raw grep
 alias xg='command grep -i'
 alias xgp='command grep -i -P'
+
+alias fucking='sudo'
+alias gateway="route -n | xg -P "^0.0.0.0" | awk '{print \$2}'"
+
+alias anon-trace='traceroute -n'
+alias pong='ping -n'
+alias gs="git status"
+
+alias restart-networking="sudo service networking restart && echo Networking Restarted"
+alias restart-network-manager="sudo service network-manager restart && echo Network-Manager Restarted"
+alias restart-wpa-supplicant="sudo service wpa_supplicant restart && echo WPA-Supplicant Restarted"
+alias refresh-network="restart-wpa-supplicant && restart-networking && restart-network-manager"
+
+
+CDPATH=:..:~:~/projects:/mnt/data
+
+export OUI=~/.std/oui
+
+function ouilookup(){
+  cat $OUI|grep --color=no $(echo $1|sed 's/://g'|cut -c1-6) | sed 's/[ \t]{1,}/\t/g' | awk -F'\t' '{print $3}'
+}
+
+alias beets='beet'
+
+function gamma(){
+  zenity --scale --print-partial --value=100 --text "Set new temperature value: (1000-25000)" --title "Redshift Scale"  2> /dev/null | (
+   while IFS='' read -r val || [[ -n "$val" ]]; do
+   newval=$((1000+(($val/100.0)*(25000-1000))))
+   redshift -O $newval >> /dev/null
+   done
+   echo Final value is $newval
+  )
+}
+
+LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34:cd=33:su=31:sg=32:tw=36:ow=35"
+alias chrome="google-chrome"
